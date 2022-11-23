@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "32862141379",
+    "project_id": "timber-track-mill",
+    "storage_bucket": "timber-track-mill.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:32862141379:android:3f1d85c4027df0c2d49b76",
+        "android_client_info": {
+          "package_name": "com.example.timbertrack_mill_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "32862141379-u5sqsql0scjq5l5c4l141v98pabkoh7f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1no2OH6wz0kbXML2zeUwBB9y206Uvlas"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "32862141379-u5sqsql0scjq5l5c4l141v98pabkoh7f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
