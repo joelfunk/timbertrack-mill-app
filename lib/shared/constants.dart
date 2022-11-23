@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart' show Color, Colors;
 
-const kAppName = 'maintenance';
+const kAppName = 'mill';
 
 class AppTheme {
   static const green = Color(0xFF006401);
