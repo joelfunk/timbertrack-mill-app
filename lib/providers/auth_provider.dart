@@ -30,7 +30,7 @@ class AuthProvider extends ChangeNotifier {
   AuthStatus authStatus = AuthStatus.initial;
 
   void logout(BuildContext context) async {
-    authStatus = AuthStatus.initial;
+    authStatus = AuthStatus.signedOut;
     await FirebaseEnv.firebaseAuth.signOut();
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CheckAuthentication()));
   }

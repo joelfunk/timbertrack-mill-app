@@ -1,7 +1,9 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:timbertrack_mill_app/config/firebase_env.dart';
+import 'package:timbertrack_mill_app/providers/truck_tickets_provider.dart';
 import 'package:timbertrack_mill_app/services/local_storage.dart';
 import 'package:timbertrack_mill_app/providers/user_provider.dart';
 import 'package:timbertrack_mill_app/providers/auth_provider.dart';
@@ -29,6 +31,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => AuthProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => HandleProvider()),
+        ChangeNotifierProvider(create: (context) => TruckTicketsProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: FirebaseEnv.environmentType == 'develop',
