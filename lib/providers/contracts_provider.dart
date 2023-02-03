@@ -17,7 +17,7 @@ class Contract {
 class ContractProvider extends ChangeNotifier {
   final contracts = <Contract>[];
 
-  Future<void> fetchContracts(String handle) => FirebaseEnv.firebaseFirestore
+  void fetchContracts(String handle) => FirebaseEnv.firebaseFirestore
           .collection('$handle/procurement/contracts')
           .where('deleted', isEqualTo: false)
           .get()
@@ -27,6 +27,8 @@ class ContractProvider extends ChangeNotifier {
           final contract = Contract(contractName: data['contractName'] ?? '', type: data['type'] ?? '');
           contracts.add(contract);
         }
+
+        devtools.log('Contracts fetched');
       }).catchError((error) {
         devtools.log('Error fetching contracts', error: error);
       });
