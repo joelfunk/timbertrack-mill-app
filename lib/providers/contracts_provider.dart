@@ -1,17 +1,24 @@
-import 'package:flutter/material.dart' show immutable, ChangeNotifier;
-import 'package:timbertrack_mill_app/config/firebase_env.dart';
-
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer' as devtools;
+
+import 'package:flutter/material.dart' show immutable, ChangeNotifier;
+
+import 'package:timbertrack_mill_app/config/firebase_env.dart';
 
 @immutable
 class Contract {
   const Contract({
     required this.contractName,
     required this.type,
+    required this.id,
   });
 
   final String contractName;
   final String type;
+  final String id;
+
+  @override
+  String toString() => 'Contract(contractName: $contractName, type: $type, id: $id)';
 }
 
 class ContractProvider extends ChangeNotifier {
@@ -24,9 +31,10 @@ class ContractProvider extends ChangeNotifier {
           .then((snapshot) {
         for (final doc in snapshot.docs) {
           final data = doc.data();
-          final contract = Contract(contractName: data['contractName'] ?? '', type: data['type'] ?? '');
+          final contract = Contract(id: doc.id, contractName: data['contractName'] ?? '', type: data['type'] ?? '');
           contracts.add(contract);
         }
+        notifyListeners();
 
         devtools.log('Contracts fetched');
       }).catchError((error) {

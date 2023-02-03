@@ -35,7 +35,6 @@ class FirebaseEnv {
         : DefaultFirebaseOptionsProduction.currentPlatform;
 
     final app = await Firebase.initializeApp(
-      name: environmentType,
       options: options,
     );
 

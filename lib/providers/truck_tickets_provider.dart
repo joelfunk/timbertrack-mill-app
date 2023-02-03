@@ -20,5 +20,7 @@ class TruckTicketsProvider extends ChangeNotifier {
       final data = doc.data();
       truckTickets.add({...data, 'id': doc.id});
     }
+
+    notifyListeners();
   }
 }
