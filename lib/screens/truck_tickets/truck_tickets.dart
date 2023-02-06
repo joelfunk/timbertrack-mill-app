@@ -23,6 +23,7 @@ class _TruckTicketsState extends State<TruckTickets> {
     super.initState();
     final handle = context.read<HandleProvider>().handle!;
     context.read<ContractProvider>().fetchContracts(handle);
+    context.read<ContractProvider>().fetchTypes(handle);
     context.read<TruckTicketsProvider>().getTruckTickets(handle);
   }
 
@@ -49,16 +50,17 @@ class _TruckTicketsState extends State<TruckTickets> {
               {'name': 'CONTENTS', 'field': 'contents', 'width': 40},
             ],
             callback: (data) {
+              devtools.log('Data: $data');
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => TruckTicketsForm(
-                    contractId: data?['contractId'],
+                    logTicket: data,
                   ),
                 ),
               );
 
-              devtools.log('Data: $data');
+              // devtools.log('Data: $data');
             },
           ),
         )

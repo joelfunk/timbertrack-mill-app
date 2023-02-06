@@ -11,18 +11,22 @@ class Contract {
     required this.contractName,
     required this.type,
     required this.id,
+    required this.availableLogging,
   });
 
   final String contractName;
   final String type;
   final String id;
+  final List<dynamic> availableLogging;
 
   @override
-  String toString() => 'Contract(contractName: $contractName, type: $type, id: $id)';
+  String toString() =>
+      'Contract(contractName: $contractName, type: $type, id: $id, availableLogging: $availableLogging)';
 }
 
 class ContractProvider extends ChangeNotifier {
   final contracts = <Contract>[];
+  List<dynamic> contractTypes = <dynamic>[];
 
   void fetchContracts(String handle) => FirebaseEnv.firebaseFirestore
           .collection('$handle/procurement/contracts')
@@ -31,7 +35,14 @@ class ContractProvider extends ChangeNotifier {
           .then((snapshot) {
         for (final doc in snapshot.docs) {
           final data = doc.data();
-          final contract = Contract(id: doc.id, contractName: data['contractName'] ?? '', type: data['type'] ?? '');
+
+          final contract = Contract(
+            id: doc.id,
+            contractName: data['contractName'] ?? '',
+            type: data['type'] ?? '',
+            availableLogging: data['availableLogging'] ?? [],
+          );
+
           contracts.add(contract);
         }
         notifyListeners();
@@ -39,5 +50,18 @@ class ContractProvider extends ChangeNotifier {
         devtools.log('Contracts fetched');
       }).catchError((error) {
         devtools.log('Error fetching contracts', error: error);
+      });
+
+  void fetchTypes(String handle) =>
+      FirebaseEnv.firebaseFirestore.collection(handle).doc('procurement').get().then((doc) {
+        final data = doc.data()!;
+        final types = data['types'] as List<dynamic>;
+
+        for (final type in types) {
+          contractTypes.add(type);
+        }
+      }).onError((error, stackTrace) {
+        devtools.log('Error fetching types', error: error);
+        devtools.log('Stack Trace: ', error: stackTrace);
       });
 }
