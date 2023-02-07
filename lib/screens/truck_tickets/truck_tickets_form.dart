@@ -7,6 +7,28 @@ import 'package:timbertrack_mill_app/providers/contracts_provider.dart';
 
 import 'dart:developer' as devtools;
 
+class DropDownMenuItemSeparator<T> extends DropdownMenuItem<T> {
+  DropDownMenuItemSeparator({this.text, super.key, super.value})
+      : super(
+          enabled: false,
+          child: Container(),
+        );
+
+  final String? text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text ?? '',
+      style: const TextStyle(
+        fontSize: 14,
+        color: Colors.black,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+}
+
 // Form Values Used for this form
 
 // Type 1:
@@ -281,7 +303,45 @@ class Type1 extends StatelessWidget {
   final List<dynamic> availableLogging;
   final Map<String, dynamic>? selectedLogging;
   final Function(String, String) formStateCallback;
-  static final _deliveryLocations = <String>['1', '2'];
+  static final _deliveryLocations = <Map<String, dynamic>>[
+    {
+      'name': 'Mills',
+      'locations': ['First Name', 'Second Name']
+    },
+    {
+      'name': 'Landings',
+      'locations': ['First Name2', 'Second Name2']
+    },
+  ];
+
+  List<DropdownMenuItem<String>> getMenuItems(List<dynamic> items) {
+    final widgets = <DropdownMenuItem<String>>[];
+    for (final item in items) {
+      widgets.add(
+        DropdownMenuItem(
+          enabled: false,
+          value: item['name'],
+          child: Text(
+            item['name'],
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      );
+      for (final location in item['locations'] as List<String>) {
+        widgets.add(
+          DropdownMenuItem<String>(
+            value: location,
+            child: Text(location),
+          ),
+        );
+      }
+    }
+    return widgets;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -369,19 +429,9 @@ class Type1 extends StatelessWidget {
                 dropdownDecoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                items: _deliveryLocations
-                    .map(
-                      (item) => DropdownMenuItem<String>(
-                        value: item,
-                        child: Text(
-                          item,
-                          style: const TextStyle(
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
+                items: [
+                  ...getMenuItems(_deliveryLocations),
+                ],
                 validator: (value) {
                   if (value == null) {
                     return 'Please Select a Contract';

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'package:timbertrack_mill_app/config/firebase_env.dart';
 import 'package:timbertrack_mill_app/providers/contracts_provider.dart';
+import 'package:timbertrack_mill_app/providers/settings_provider.dart';
 import 'package:timbertrack_mill_app/providers/truck_tickets_provider.dart';
 import 'package:timbertrack_mill_app/services/local_storage.dart';
 import 'package:timbertrack_mill_app/providers/user_provider.dart';
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => AuthProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => HandleProvider()),
+        ChangeNotifierProvider(create: (context) => SettingsProvider()),
         ChangeNotifierProvider(create: (context) => ContractProvider()),
         ChangeNotifierProvider(create: (context) => TruckTicketsProvider()),
       ],

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'package:timbertrack_mill_app/providers/handle_provider.dart';
 import 'package:timbertrack_mill_app/providers/contracts_provider.dart';
+import 'package:timbertrack_mill_app/providers/settings_provider.dart';
 import 'package:timbertrack_mill_app/providers/truck_tickets_provider.dart';
 import 'package:timbertrack_mill_app/screens/truck_tickets/truck_tickets_form.dart';
 import 'package:timbertrack_mill_app/enspire_framework/itab_header/itab_header.dart';
@@ -22,6 +23,8 @@ class _TruckTicketsState extends State<TruckTickets> {
   void initState() {
     super.initState();
     final handle = context.read<HandleProvider>().handle!;
+
+    context.read<SettingsProvider>().fetchSettings(handle);
     context.read<ContractProvider>().fetchContracts(handle);
     context.read<ContractProvider>().fetchTypes(handle);
     context.read<TruckTicketsProvider>().getTruckTickets(handle);
