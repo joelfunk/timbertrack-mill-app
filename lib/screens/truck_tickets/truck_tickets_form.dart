@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:collection/collection.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:simple_forms/models/app_form_state.dart';
 
+import 'package:timbertrack_mill_app/providers/settings_provider.dart';
 import 'package:timbertrack_mill_app/providers/contracts_provider.dart';
 
 import 'dart:developer' as devtools;
@@ -58,7 +60,7 @@ class TruckTicketsFormState extends AppFormState<String, String?> {
 
 class TruckTicketsForm extends StatefulWidget {
   const TruckTicketsForm({
-    required this.logTicket,
+    this.logTicket,
     super.key,
   });
   final Map<String, dynamic>? logTicket;
@@ -86,6 +88,7 @@ class _TruckTicketsFormState extends State<TruckTicketsForm> {
     super.initState();
     // Fetch contract for this truck ticket
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Depending on the contract type, fetch the needed fields to populate here
       if (widget.logTicket?['contractId'] != null) {
         final contract = context.read<ContractProvider>().contracts.singleWhere(
               (contract) => contract.id == widget.logTicket?['contractId'],
@@ -98,17 +101,9 @@ class _TruckTicketsFormState extends State<TruckTicketsForm> {
 
         _contractTypeNotifier.value = contract.type;
 
-        final availableLogging = contract.availableLogging.map((e) => e).toList();
-
-        final selectedLogging = availableLogging.singleWhere((e) => widget.logTicket?['loggingId'] == e['value']);
-
-        devtools.log('Selected Logging: $selectedLogging');
-
         setState(() {
           this.contract = contract;
           this.contents = contents;
-          this.availableLogging = availableLogging;
-          this.selectedLogging = selectedLogging;
         });
 
         // Selected is the value
@@ -192,6 +187,10 @@ class _TruckTicketsFormState extends State<TruckTicketsForm> {
                           },
                           onChanged: (value) {
                             _contractTypeNotifier.value = value?.type;
+
+                            setState(() {
+                              contract = value;
+                            });
                             devtools.log('Contract Value: $value');
                           },
                         ),
@@ -249,15 +248,17 @@ class _TruckTicketsFormState extends State<TruckTicketsForm> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 20.0),
                   ValueListenableBuilder(
                     valueListenable: _contractTypeNotifier,
-                    builder: (_, String? type, widget) {
+                    builder: (_, String? type, __) {
                       switch (type) {
                         case '1':
                           {
                             return Type1(
-                              availableLogging: availableLogging ?? [],
-                              selectedLogging: selectedLogging,
+                              contract: contract,
+                              loggingId: widget.logTicket?['loggingId'],
+                              location: widget.logTicket?['location'],
                               formStateCallback: formStateCallback,
                             );
                           }
@@ -292,50 +293,57 @@ class _TruckTicketsFormState extends State<TruckTicketsForm> {
   }
 }
 
+// Form fields to edit:
+// loggingId
+// location: mill|3000 - (setting type)|(id)
+
+// Needing: availabelLogging from procurement/contracts/[id] located in the Contract
+// Needing: delivery locations from settings/mills and settings/landings
+
 class Type1 extends StatelessWidget {
   const Type1({
-    required this.availableLogging,
-    required this.selectedLogging,
+    required this.loggingId,
+    required this.location,
+    required this.contract,
     required this.formStateCallback,
     super.key,
   });
 
-  final List<dynamic> availableLogging;
-  final Map<String, dynamic>? selectedLogging;
-  final Function(String, String) formStateCallback;
-  static final _deliveryLocations = <Map<String, dynamic>>[
-    {
-      'name': 'Mills',
-      'locations': ['First Name', 'Second Name']
-    },
-    {
-      'name': 'Landings',
-      'locations': ['First Name2', 'Second Name2']
-    },
-  ];
+  final Contract? contract;
+  final String? loggingId;
+  final String? location;
 
-  List<DropdownMenuItem<String>> getMenuItems(List<dynamic> items) {
-    final widgets = <DropdownMenuItem<String>>[];
+  final Function(String, String) formStateCallback;
+
+  List<DropdownMenuItem<Map<String, dynamic>>> getMenuItems(List<Map<String, dynamic>> items) {
+    final widgets = <DropdownMenuItem<Map<String, dynamic>>>[];
+
     for (final item in items) {
       widgets.add(
         DropdownMenuItem(
           enabled: false,
-          value: item['name'],
+          value: item,
           child: Text(
             item['name'],
             style: const TextStyle(
-              fontSize: 16,
+              fontSize: 12,
               color: Colors.black,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
       );
-      for (final location in item['locations'] as List<String>) {
+
+      for (final location in item['locations'] as List<Map<String, dynamic>>) {
         widgets.add(
-          DropdownMenuItem<String>(
+          DropdownMenuItem(
             value: location,
-            child: Text(location),
+            child: Text(
+              location['name'],
+              style: const TextStyle(
+                fontSize: 10,
+              ),
+            ),
           ),
         );
       }
@@ -343,8 +351,40 @@ class Type1 extends StatelessWidget {
     return widgets;
   }
 
+  // If cannot find, default to mills|3000
+  Map<String, dynamic>? getSelectedLocation(String? location, List<Map<String, dynamic>> locations) {
+    if (location == null) return null;
+
+    final locationName = location.split('|')[0];
+    final locationId = location.split('|')[1];
+
+    for (final item in locations) {
+      final locationsList = item['locations'] as List<Map<String, dynamic>>;
+
+      for (final e in locationsList) {
+        if (e['id'] == locationId && e['location'] == locationName) {
+          return e;
+        }
+      }
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final locations = context.read<SettingsProvider>().locations;
+    final availableLogging =
+        contract?.availableLogging.map((e) => e).cast<Map<String, dynamic>>().toList() ?? <Map<String, dynamic>>[];
+    final selectedLoggingCo = availableLogging.singleWhereOrNull((e) => loggingId == e['value']);
+    final selectedLocation = getSelectedLocation(location, locations);
+
+    if (contract == null) {
+      devtools.log('Contract: $contract');
+      devtools.log('Selected Logging Co: $selectedLoggingCo');
+      devtools.log('Location: $location');
+      return const Text('Missing contract | selectedLoggingCo || location');
+    }
+
     return Column(
       children: [
         Row(
@@ -352,7 +392,7 @@ class Type1 extends StatelessWidget {
           children: [
             Expanded(
               child: DropdownButtonFormField2<Map<String, dynamic>?>(
-                value: selectedLogging,
+                value: selectedLoggingCo,
                 decoration: InputDecoration(
                   isDense: true,
                   contentPadding: EdgeInsets.zero,
@@ -404,7 +444,8 @@ class Type1 extends StatelessWidget {
             ),
             const SizedBox(width: 10.0),
             Expanded(
-              child: DropdownButtonFormField2<String?>(
+              child: DropdownButtonFormField2<Map<String, dynamic>>(
+                value: selectedLocation,
                 decoration: InputDecoration(
                   isDense: true,
                   contentPadding: EdgeInsets.zero,
@@ -414,9 +455,9 @@ class Type1 extends StatelessWidget {
                 ),
                 isExpanded: true,
                 hint: const Text(
-                  'Select Contents',
+                  'Delivery Location',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 10,
                   ),
                 ),
                 icon: const Icon(
@@ -430,15 +471,17 @@ class Type1 extends StatelessWidget {
                   borderRadius: BorderRadius.circular(15),
                 ),
                 items: [
-                  ...getMenuItems(_deliveryLocations),
+                  ...getMenuItems(locations),
                 ],
                 validator: (value) {
                   if (value == null) {
-                    return 'Please Select a Contract';
+                    return 'Please Select a Delivery Location';
                   }
                 },
                 onChanged: (value) {
-                  devtools.log('Contract Value: $value');
+                  if (value == null) return;
+                  devtools.log('Value: $value');
+                  formStateCallback('location', '${value['location']}|${value['id']}');
                 },
               ),
             ),

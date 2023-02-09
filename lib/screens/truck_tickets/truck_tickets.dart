@@ -39,7 +39,9 @@ class _TruckTicketsState extends State<TruckTickets> {
         ITabHeader(
           title: 'Truck Tickets',
           buttonTitle: '+ New Truck',
-          buttonCallback: () {},
+          buttonCallback: () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const TruckTicketsForm()));
+          },
         ),
         Expanded(
           child: TableComponent(
