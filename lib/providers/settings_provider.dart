@@ -7,20 +7,14 @@ class SettingsProvider extends ChangeNotifier {
   final mills = <dynamic>[];
   final landings = <dynamic>[];
 
-  List<Map<String, dynamic>> get locations => [
-        {
-          'name': 'Mills',
-          'locations': <Map<String, dynamic>>[
-            for (final mill in mills) {'location': 'mills', ...mill},
-          ],
-        },
-        {
-          'name': 'Landings',
-          'locations': <Map<String, dynamic>>[
-            for (final landing in landings) {'location': 'landings', ...landing},
-          ],
-        },
-      ];
+  Map<String, List<Map<String, dynamic>>> get locations => {
+        'mills': <Map<String, dynamic>>[
+          for (final mill in mills) {'location': 'mills', ...mill},
+        ],
+        'landings': <Map<String, dynamic>>[
+          for (final landing in landings) {'location': 'landings', ...landing},
+        ],
+      };
 
   void fetchSettings(String handle) async {
     await FirebaseEnv.firebaseFirestore

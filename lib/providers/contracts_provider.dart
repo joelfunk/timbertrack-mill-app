@@ -12,16 +12,18 @@ class Contract {
     required this.type,
     required this.id,
     required this.availableLogging,
+    required this.availableTrucking,
   });
 
   final String contractName;
   final String type;
   final String id;
   final List<dynamic> availableLogging;
+  final List<dynamic> availableTrucking;
 
   @override
   String toString() =>
-      'Contract(contractName: $contractName, type: $type, id: $id, availableLogging: $availableLogging)';
+      'Contract(contractName: $contractName, type: $type, id: $id, availableLogging: $availableLogging, availableTrucking: $availableTrucking )';
 }
 
 class ContractProvider extends ChangeNotifier {
@@ -41,6 +43,7 @@ class ContractProvider extends ChangeNotifier {
             contractName: data['contractName'] ?? '',
             type: data['type'] ?? '',
             availableLogging: data['availableLogging'] ?? [],
+            availableTrucking: data['availableTrucking'] ?? [],
           );
 
           contracts.add(contract);

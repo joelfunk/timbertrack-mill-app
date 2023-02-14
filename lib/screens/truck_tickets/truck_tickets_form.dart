@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:collection/collection.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:simple_forms/models/app_form_state.dart';
 
+import 'package:simple_forms/models/app_form_state.dart';
+import 'package:timbertrack_mill_app/config/firebase_env.dart';
+import 'package:timbertrack_mill_app/providers/handle_provider.dart';
+import 'package:timbertrack_mill_app/extensions/capitalize_first.dart';
 import 'package:timbertrack_mill_app/providers/settings_provider.dart';
 import 'package:timbertrack_mill_app/providers/contracts_provider.dart';
 
@@ -78,7 +81,11 @@ class _TruckTicketsFormState extends State<TruckTicketsForm> {
   final _formKey = GlobalKey<FormState>();
   final _contractTypeNotifier = ValueNotifier<String?>(null);
 
+  late final _isEditing = widget.logTicket != null;
+
   final _formState = <String, String?>{
+    'contractId': null,
+    'contents': null,
     'logginId': null,
     'location': null,
   };
@@ -112,8 +119,7 @@ class _TruckTicketsFormState extends State<TruckTicketsForm> {
   }
 
   void formStateCallback(String key, String value) {
-    devtools.log('Key: $key');
-    devtools.log('Value: $value');
+    devtools.log('formStateCallback Key: $key - Value: $value');
     _formState[key] = value;
   }
 
@@ -166,6 +172,13 @@ class _TruckTicketsFormState extends State<TruckTicketsForm> {
                           dropdownDecoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
                           ),
+                          buttonDecoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.black,
+                            ),
+                            color: _isEditing ? Colors.grey.withOpacity(.3) : Colors.transparent,
+                          ),
                           items: contractsList
                               .map(
                                 (item) => DropdownMenuItem<Contract>(
@@ -174,7 +187,6 @@ class _TruckTicketsFormState extends State<TruckTicketsForm> {
                                     item.contractName,
                                     style: const TextStyle(
                                       fontSize: 12,
-                                      color: Colors.black,
                                     ),
                                   ),
                                 ),
@@ -185,14 +197,14 @@ class _TruckTicketsFormState extends State<TruckTicketsForm> {
                               return 'Please Select a Contract';
                             }
                           },
-                          onChanged: (value) {
-                            _contractTypeNotifier.value = value?.type;
-
-                            setState(() {
-                              contract = value;
-                            });
-                            devtools.log('Contract Value: $value');
-                          },
+                          onChanged: _isEditing
+                              ? null
+                              : (value) {
+                                  _contractTypeNotifier.value = value?.type;
+                                  contract = value;
+                                  _formState['contractId'] = value?.id;
+                                  devtools.log('_formState = ${_formState.toString()}');
+                                },
                         ),
                       ),
                       const SizedBox(width: 10.0),
@@ -220,6 +232,13 @@ class _TruckTicketsFormState extends State<TruckTicketsForm> {
                           iconSize: 30,
                           buttonHeight: 60,
                           buttonPadding: const EdgeInsets.only(left: 20, right: 10),
+                          buttonDecoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.black,
+                            ),
+                            color: _isEditing ? Colors.grey.withOpacity(.3) : Colors.transparent,
+                          ),
                           dropdownDecoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
                           ),
@@ -238,12 +257,15 @@ class _TruckTicketsFormState extends State<TruckTicketsForm> {
                               .toList(),
                           validator: (value) {
                             if (value == null) {
-                              return 'Please Select a Contract';
+                              return 'Please Select a Content';
                             }
                           },
-                          onChanged: (value) {
-                            devtools.log('Contract Value: $value');
-                          },
+                          onChanged: _isEditing
+                              ? null
+                              : (value) {
+                                  _formState['contents'] = value?['name'];
+                                  devtools.log('_formState = ${_formState.toString()}');
+                                },
                         ),
                       ),
                     ],
@@ -264,7 +286,13 @@ class _TruckTicketsFormState extends State<TruckTicketsForm> {
                           }
                         case '2':
                           {
-                            return const Text('Case 2');
+                            return Type2(
+                              contract: contract,
+                              loggingId: widget.logTicket?['loggingId'],
+                              truckingId: widget.logTicket?['truckingId'],
+                              ticketNumber: widget.logTicket?['ticketNumber'],
+                              formStateCallback: formStateCallback,
+                            );
                           }
                         case '3':
                           {
@@ -293,6 +321,325 @@ class _TruckTicketsFormState extends State<TruckTicketsForm> {
   }
 }
 
+class Type2 extends StatelessWidget {
+  const Type2({
+    required this.contract,
+    required this.loggingId,
+    required this.truckingId,
+    required this.ticketNumber,
+    required this.formStateCallback,
+    super.key,
+  });
+
+  final Contract? contract;
+  final String? loggingId;
+  final String? truckingId;
+  final String? ticketNumber;
+
+  final Function(String, String) formStateCallback;
+
+  Future<Map<String, List<Map<String, dynamic>>>> fetchHauling(BuildContext context) async {
+    final handle = context.read<HandleProvider>().handle;
+    final contractId = contract?.id;
+
+    final enabledLocations = <String, List<Map<String, dynamic>>>{
+      'mills': <Map<String, dynamic>>[],
+      'landings': <Map<String, dynamic>>[],
+    };
+
+    Map<String, List<Map<String, dynamic>>> locations = context.read<SettingsProvider>().locations;
+    if (contractId == null) return {};
+
+    final response =
+        await FirebaseEnv.firebaseFirestore.collection('$handle/procurement/contracts/$contractId/hauling').get();
+
+    for (final doc in response.docs) {
+      final id = doc.id;
+      final locationName = id.split('|')[0];
+      final locationId = id.split('|')[1];
+
+      final data = doc.data();
+
+      final distance = data['distance'] as String?;
+      final hasDistance = distance != null && distance.isNotEmpty;
+
+      final config = data['configs'] as Map<String, dynamic>?;
+      final hasConfig = config?.entries.any((e) => e.value.isNotEmpty) ?? false;
+
+      if (hasDistance || hasConfig) {
+        // find location in settings provider and add to enabled locations
+        for (final location in locations[locationName] ?? []) {
+          if (location['id'] == locationId) {
+            enabledLocations[locationName]?.add(location);
+          }
+        }
+      }
+    }
+
+    return enabledLocations;
+  }
+
+  List<DropdownMenuItem<Map<String, dynamic>>> getMenuItems(Map<String, List<Map<String, dynamic>>> items) {
+    final widgets = <DropdownMenuItem<Map<String, dynamic>>>[];
+
+    for (final item in items.entries) {
+      final key = item.key;
+      final listOfLocations = item.value;
+
+      widgets.add(
+        DropdownMenuItem(
+          enabled: false,
+          child: Text(
+            key.firstLetter(),
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      );
+
+      for (final location in listOfLocations) {
+        widgets.add(
+          DropdownMenuItem(
+            value: location,
+            child: Text(
+              location['name'],
+              style: const TextStyle(
+                fontSize: 10,
+              ),
+            ),
+          ),
+        );
+      }
+    }
+    return widgets;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final availableLogging = contract?.availableLogging.cast<Map<String, dynamic>>() ?? [];
+    final selectedLogging = availableLogging.singleWhereOrNull((e) => loggingId == e['value']);
+
+    final availableTrucking = contract?.availableTrucking.cast<Map<String, dynamic>>() ?? [];
+    final selectedTrucking = availableTrucking.singleWhereOrNull((e) => truckingId == e['value']);
+
+    return Column(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+              child: DropdownButtonFormField2<Map<String, dynamic>?>(
+                value: selectedTrucking,
+                decoration: InputDecoration(
+                  isDense: true,
+                  contentPadding: EdgeInsets.zero,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                isExpanded: true,
+                icon: const Icon(
+                  Icons.arrow_drop_down,
+                  color: Colors.black45,
+                ),
+                iconSize: 30,
+                buttonHeight: 60,
+                buttonPadding: const EdgeInsets.only(left: 20, right: 10),
+                dropdownDecoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                buttonDecoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: Colors.black,
+                  ),
+                ),
+                items: availableTrucking
+                    .map(
+                      (item) => DropdownMenuItem<Map<String, dynamic>?>(
+                        value: item,
+                        child: Text(
+                          item['label'],
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+                validator: (value) {
+                  if (value == null) {
+                    return 'Please Select a Trucking Co.';
+                  }
+                },
+                onChanged: (value) {
+                  if (value == null) return;
+                  devtools.log('Value: $value');
+                  formStateCallback('location', '${value['location']}|${value['id']}');
+                },
+              ),
+            ),
+            const SizedBox(width: 10.0),
+            Expanded(
+              child: DropdownButtonFormField2<Map<String, dynamic>?>(
+                value: selectedLogging,
+                decoration: InputDecoration(
+                  isDense: true,
+                  contentPadding: EdgeInsets.zero,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                isExpanded: true,
+                icon: const Icon(
+                  Icons.arrow_drop_down,
+                  color: Colors.black45,
+                ),
+                iconSize: 30,
+                buttonHeight: 60,
+                buttonPadding: const EdgeInsets.only(left: 20, right: 10),
+                dropdownDecoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                buttonDecoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: Colors.black,
+                  ),
+                ),
+                items: availableLogging
+                    .map(
+                      (item) => DropdownMenuItem<Map<String, dynamic>?>(
+                        value: item,
+                        child: Text(
+                          item['label'],
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+                validator: (value) {
+                  if (value == null) {
+                    return 'Please Select a Contract';
+                  }
+                },
+                onChanged: (value) {
+                  formStateCallback.call('loggingId', value?['value']);
+                  devtools.log('Contract Value: $value');
+                },
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20.0),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            FutureBuilder<Object>(
+                future: fetchHauling(context),
+                builder: (context, snapshot) {
+                  if (snapshot.data == null || snapshot.hasError) {
+                    return const CircularProgressIndicator();
+                  }
+
+                  final enabledLocations = snapshot.data as Map<String, List<Map<String, dynamic>>>;
+
+                  return Expanded(
+                    child: DropdownButtonFormField2<Map<String, dynamic>?>(
+                      decoration: InputDecoration(
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      isExpanded: true,
+                      icon: const Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black45,
+                      ),
+                      iconSize: 30,
+                      buttonHeight: 60,
+                      buttonPadding: const EdgeInsets.only(left: 20, right: 10),
+                      dropdownDecoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      buttonDecoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: Colors.black,
+                        ),
+                      ),
+                      items: [
+                        ...getMenuItems(enabledLocations),
+                      ],
+                      validator: (value) {
+                        if (value == null) {
+                          return 'Please Select a Contract';
+                        }
+                      },
+                      onChanged: (value) {
+                        formStateCallback.call('loggingId', value?['value']);
+                        devtools.log('Contract Value: $value');
+                      },
+                    ),
+                  );
+                }),
+            const SizedBox(width: 10.0),
+            Expanded(
+              child: TextFormField(
+                initialValue: ticketNumber ?? '',
+                decoration: const InputDecoration(
+                  isDense: false,
+                  isCollapsed: false,
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  labelText: 'Ticket #',
+                  labelStyle: TextStyle(
+                    color: Colors.black87,
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.red,
+                      width: 2.0,
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.red,
+                      width: 2.0,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.transparent,
+                      width: 0.0,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.green,
+                      width: 2.0,
+                    ),
+                  ),
+                  fillColor: Colors.white,
+                  filled: true,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
 // Form fields to edit:
 // loggingId
 // location: mill|3000 - (setting type)|(id)
@@ -315,16 +662,18 @@ class Type1 extends StatelessWidget {
 
   final Function(String, String) formStateCallback;
 
-  List<DropdownMenuItem<Map<String, dynamic>>> getMenuItems(List<Map<String, dynamic>> items) {
+  List<DropdownMenuItem<Map<String, dynamic>>> getMenuItems(Map<String, List<Map<String, dynamic>>> items) {
     final widgets = <DropdownMenuItem<Map<String, dynamic>>>[];
 
-    for (final item in items) {
+    for (final item in items.entries) {
+      final key = item.key;
+      final listOfLocations = item.value;
+
       widgets.add(
         DropdownMenuItem(
           enabled: false,
-          value: item,
           child: Text(
-            item['name'],
+            key.firstLetter(),
             style: const TextStyle(
               fontSize: 12,
               color: Colors.black,
@@ -334,7 +683,7 @@ class Type1 extends StatelessWidget {
         ),
       );
 
-      for (final location in item['locations'] as List<Map<String, dynamic>>) {
+      for (final location in listOfLocations) {
         widgets.add(
           DropdownMenuItem(
             value: location,
@@ -352,21 +701,20 @@ class Type1 extends StatelessWidget {
   }
 
   // If cannot find, default to mills|3000
-  Map<String, dynamic>? getSelectedLocation(String? location, List<Map<String, dynamic>> locations) {
+  Map<String, dynamic>? getSelectedLocation(String? location, Map<String, List<Map<String, dynamic>>> locations) {
     if (location == null) return null;
 
     final locationName = location.split('|')[0];
     final locationId = location.split('|')[1];
 
-    for (final item in locations) {
-      final locationsList = item['locations'] as List<Map<String, dynamic>>;
+    final listOfLocations = locations[location] ?? [];
 
-      for (final e in locationsList) {
-        if (e['id'] == locationId && e['location'] == locationName) {
-          return e;
-        }
+    for (final e in listOfLocations) {
+      if (e['id'] == locationId && e['location'] == locationName) {
+        return e;
       }
     }
+
     return null;
   }
 
@@ -376,13 +724,11 @@ class Type1 extends StatelessWidget {
     final availableLogging =
         contract?.availableLogging.map((e) => e).cast<Map<String, dynamic>>().toList() ?? <Map<String, dynamic>>[];
     final selectedLoggingCo = availableLogging.singleWhereOrNull((e) => loggingId == e['value']);
+
     final selectedLocation = getSelectedLocation(location, locations);
 
     if (contract == null) {
-      devtools.log('Contract: $contract');
-      devtools.log('Selected Logging Co: $selectedLoggingCo');
-      devtools.log('Location: $location');
-      return const Text('Missing contract | selectedLoggingCo || location');
+      return const Text('Missing contract');
     }
 
     return Column(
@@ -416,6 +762,12 @@ class Type1 extends StatelessWidget {
                 buttonPadding: const EdgeInsets.only(left: 20, right: 10),
                 dropdownDecoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
+                ),
+                buttonDecoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: Colors.black,
+                  ),
                 ),
                 items: availableLogging
                     .map(
@@ -469,6 +821,12 @@ class Type1 extends StatelessWidget {
                 buttonPadding: const EdgeInsets.only(left: 20, right: 10),
                 dropdownDecoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
+                ),
+                buttonDecoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: Colors.black,
+                  ),
                 ),
                 items: [
                   ...getMenuItems(locations),
