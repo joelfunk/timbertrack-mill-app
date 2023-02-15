@@ -9,12 +9,13 @@ import 'package:timbertrack_mill_app/providers/settings_provider.dart';
 
 import 'dart:developer' as devtools;
 
-// Form fields to edit:
-// loggingId
-// location: mill|3000 - (setting type)|(id)
+// Form Fields:
 
-// Needing: availabelLogging from procurement/contracts/[id] located in the Contract
-// Needing: delivery locations from settings/mills and settings/landings
+//'contractId': null,
+// 'contents': null,
+// 'logginId': null,
+// location: null,
+
 class Type1 extends StatelessWidget {
   const Type1({
     required this.loggingId,

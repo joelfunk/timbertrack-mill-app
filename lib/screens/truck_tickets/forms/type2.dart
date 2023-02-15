@@ -9,6 +9,14 @@ import 'package:timbertrack_mill_app/extensions/capitalize_first.dart';
 import 'package:timbertrack_mill_app/providers/settings_provider.dart';
 import 'package:timbertrack_mill_app/providers/contracts_provider.dart';
 
+// Form Values:
+
+// truckingId
+// loggingId
+// location
+// ticketNumber
+// contents
+// contractId
 class Type2 extends StatelessWidget {
   const Type2({
     required this.contract,

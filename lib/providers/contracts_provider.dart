@@ -13,6 +13,8 @@ class Contract {
     required this.id,
     required this.availableLogging,
     required this.availableTrucking,
+    required this.availableLandowners,
+    required this.outsideMills,
   });
 
   final String contractName;
@@ -20,6 +22,8 @@ class Contract {
   final String id;
   final List<dynamic> availableLogging;
   final List<dynamic> availableTrucking;
+  final List<dynamic> availableLandowners;
+  final List<dynamic> outsideMills;
 
   @override
   String toString() =>
@@ -28,7 +32,7 @@ class Contract {
 
 class ContractProvider extends ChangeNotifier {
   final contracts = <Contract>[];
-  List<dynamic> contractTypes = <dynamic>[];
+  List<dynamic> contentTypes = <dynamic>[];
 
   void fetchContracts(String handle) => FirebaseEnv.firebaseFirestore
           .collection('$handle/procurement/contracts')
@@ -44,6 +48,8 @@ class ContractProvider extends ChangeNotifier {
             type: data['type'] ?? '',
             availableLogging: data['availableLogging'] ?? [],
             availableTrucking: data['availableTrucking'] ?? [],
+            availableLandowners: data['landowners'] ?? [],
+            outsideMills: data['outsideMills'] ?? [],
           );
 
           contracts.add(contract);
@@ -61,7 +67,7 @@ class ContractProvider extends ChangeNotifier {
         final types = data['types'] as List<dynamic>;
 
         for (final type in types) {
-          contractTypes.add(type);
+          contentTypes.add(type);
         }
       }).onError((error, stackTrace) {
         devtools.log('Error fetching types', error: error);

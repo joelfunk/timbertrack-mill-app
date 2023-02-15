@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:timbertrack_mill_app/config/firebase_env.dart';
 
-import 'dart:developer' as devtools;
+import 'package:timbertrack_mill_app/config/firebase_env.dart';
 
 class SettingsProvider extends ChangeNotifier {
   final mills = <dynamic>[];
   final landings = <dynamic>[];
+  final outsideMills = <dynamic>[];
 
   Map<String, List<Map<String, dynamic>>> get locations => {
         'mills': <Map<String, dynamic>>[
@@ -39,6 +39,15 @@ class SettingsProvider extends ChangeNotifier {
       }
     });
 
-    devtools.log('Settings: $mills');
+    await FirebaseEnv.firebaseFirestore
+        .collection('$handle/settings/outsideMills')
+        .where('deleted', isEqualTo: false)
+        .get()
+        .then((snapshot) {
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+        outsideMills.add({'id': doc.id, ...data});
+      }
+    });
   }
 }

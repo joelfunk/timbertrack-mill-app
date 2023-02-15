@@ -5,7 +5,7 @@ import 'package:timbertrack_mill_app/providers/handle_provider.dart';
 import 'package:timbertrack_mill_app/providers/contracts_provider.dart';
 import 'package:timbertrack_mill_app/providers/settings_provider.dart';
 import 'package:timbertrack_mill_app/providers/truck_tickets_provider.dart';
-import 'package:timbertrack_mill_app/screens/truck_tickets/truck_tickets_form.dart';
+import 'package:timbertrack_mill_app/screens/truck_tickets/forms/truck_tickets_form.dart';
 import 'package:timbertrack_mill_app/enspire_framework/itab_header/itab_header.dart';
 import 'package:timbertrack_mill_app/enspire_framework/table_component/table_component.dart';
 
