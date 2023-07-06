@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"git.autoRepositoryDetection": "subFolders",
+		"git.mergeEditor": false,
+		"dart.previewFlutterUiGuides": false
+	}
+}
