@@ -10,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:timbertrack_mill_app/constants/constants.dart';
 import 'package:timbertrack_mill_app/config/firebase_env.dart';
 import 'package:timbertrack_mill_app/dialogs/alert_dialog.dart';
+import 'package:timbertrack_mill_app/providers/users_provider.dart';
 import 'package:timbertrack_mill_app/services/local_storage.dart';
 import 'package:timbertrack_mill_app/providers/user_provider.dart';
 import 'package:timbertrack_mill_app/providers/handle_provider.dart';
@@ -46,7 +47,7 @@ class AuthProvider extends ChangeNotifier {
     authStatus = AuthStatus.signedIn;
 
     await context.read<UserProvider>().subUser(credential.user!.email!, handle!);
-
+    await context.read<UsersProvider>().subUsers(handle);
     notifyListeners();
   }
 
@@ -64,6 +65,7 @@ class AuthProvider extends ChangeNotifier {
       authStatus = AuthStatus.signedIn;
       final email = user.email!;
       await context.read<UserProvider>().subUser(email, handle!);
+      await context.read<UsersProvider>().subUsers(handle);
     } else {
       authStatus = AuthStatus.signedOut;
       (handle != null && handle.isNotEmpty) //

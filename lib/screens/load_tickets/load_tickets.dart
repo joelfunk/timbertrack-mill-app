@@ -13,7 +13,8 @@ import 'package:timbertrack_mill_app/enspire_framework-port/table_component/tabl
 import 'dart:developer' as devtools;
 
 class LoadTickets extends StatefulWidget {
-  const LoadTickets({super.key});
+  const LoadTickets({this.contract, super.key});
+  final Contract? contract;
 
   @override
   State<LoadTickets> createState() => _LoadTicketsState();

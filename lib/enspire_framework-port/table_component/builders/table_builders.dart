@@ -21,17 +21,18 @@ Widget createTableHeaderColumn({
   if (columnIndex == columns.length - 1) {
     return Expanded(
       child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: () {
           sorter.changeSort(column['field'], () => callback.call());
         },
         child: Container(
-          padding: const EdgeInsets.only(left: 15, right: 15, top: 15, bottom: 5),
+          padding: const EdgeInsets.only(left: 15, right: 15, top: 15, bottom: 10),
           child: Row(
             children: [
               Text(
                 column['name'],
                 style: const TextStyle(
-                  fontSize: 10.0,
+                  fontSize: 12.0,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -45,12 +46,13 @@ Widget createTableHeaderColumn({
   }
 
   return GestureDetector(
+    behavior: HitTestBehavior.opaque,
     onTap: () {
       sorter.changeSort(column['field'], () => callback.call());
     },
     child: Container(
       width: size.width * table_utilities.convertWidthToPercent(column['width']),
-      padding: const EdgeInsets.only(left: 15, right: 15, top: 15, bottom: 5),
+      padding: const EdgeInsets.only(left: 15, right: 15, top: 15, bottom: 10),
       child: Row(
         children: [
           Flexible(
@@ -58,7 +60,7 @@ Widget createTableHeaderColumn({
               column['name'],
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                fontSize: 10.0,
+                fontSize: 12.0,
                 fontWeight: FontWeight.bold,
               ),
             ),

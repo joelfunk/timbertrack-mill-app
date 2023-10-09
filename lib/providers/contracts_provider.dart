@@ -2,6 +2,7 @@
 import 'dart:developer' as devtools;
 import 'package:flutter/material.dart' show immutable, ChangeNotifier;
 import 'package:timbertrack_mill_app/config/firebase_env.dart';
+import 'package:timbertrack_mill_app/constants/constants.dart';
 
 @immutable
 class Contract {
@@ -29,16 +30,20 @@ class Contract {
 }
 
 class ContractProvider extends ChangeNotifier {
+  final List<Map<String, dynamic>> contractsTable = [];
   final contracts = <Contract>[];
   List<dynamic> contentTypes = <dynamic>[];
 
   void fetchContracts(String handle) => FirebaseEnv.firebaseFirestore
           .collection('$handle/procurement/contracts')
+          .where('type', isEqualTo: kContractTypes['HARVEST']?['id'])
           .where('deleted', isEqualTo: false)
           .get()
           .then((snapshot) {
         for (final doc in snapshot.docs) {
           final data = doc.data();
+
+          contractsTable.add({...data, 'id': doc.id});
 
           final contract = Contract(
             id: doc.id,

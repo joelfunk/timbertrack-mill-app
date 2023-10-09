@@ -19,3 +19,12 @@ class AppTheme {
   static const bottomAppBarIconShadowColor = Color(0xFF293846);
   static const bottomAppBarIconActiveColor = Colors.white;
 }
+
+const kContractTypes = {
+  'GATEWOOD': {'id': '0', 'position': 0, 'name': 'Gatewood'}, // CHANGE BACK TO '1' AFTER NEW IMPORT
+  'MODIFIED_GATEWOOD': {'id': '1', 'position': 1, 'name': 'Modified Gatewood'},
+  'MODIFIED_GATEWOOD_HAULING': {'id': '2', 'position': 2, 'name': 'Modified Gatewood & Hauling'},
+  'HARVEST': {'id': '3', 'position': 3, 'name': 'Harvest'},
+  'SALES_CONTRACT': {'id': '4', 'position': 4, 'name': 'Sales Contract'},
+  'TRANSFER': {'id': '5', 'position': 5, 'name': 'Transfer'},
+};

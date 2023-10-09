@@ -188,7 +188,7 @@ Container createTextColumn({
 
   return Container(
     width: width,
-    padding: const EdgeInsets.all(10),
+    padding: const EdgeInsets.all(15),
     child: ValueListenableBuilder(
       valueListenable: SearchService().highlightWords,
       builder: (context, value, child) {
@@ -216,7 +216,7 @@ Expanded createExpandedTextColumn({
   if (!highlight) {
     return Expanded(
       child: Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(15),
           child: Text(
             text,
             style: const TextStyle(
@@ -228,7 +228,7 @@ Expanded createExpandedTextColumn({
 
   return Expanded(
     child: Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(15),
       child: ValueListenableBuilder(
         valueListenable: SearchService().highlightWords,
         builder: (context, value, child) {

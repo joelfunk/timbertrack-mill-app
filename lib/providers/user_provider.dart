@@ -9,9 +9,6 @@ import 'package:timbertrack_mill_app/config/firebase_env.dart';
 class UserProvider extends ChangeNotifier {
   final _roles = <String>[];
 
-  final companyInfo = <String, dynamic>{};
-
-  String? handle;
   UserModel? _user;
   String _userEmail = '';
   bool _isLoading = false;
@@ -24,8 +21,6 @@ class UserProvider extends ChangeNotifier {
 
   Future<void> clear() async {
     _roles.clear();
-    companyInfo.clear();
-    handle = null;
     _userEmail = '';
     _isLoading = false;
   }

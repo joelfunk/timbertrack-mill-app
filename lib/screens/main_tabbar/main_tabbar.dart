@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:timbertrack_mill_app/constants/constants.dart';
+import 'package:timbertrack_mill_app/screens/contracts/contracts.dart';
 import 'package:timbertrack_mill_app/screens/home/home.dart';
 import 'package:timbertrack_mill_app/providers/auth_provider-port.dart';
 import 'package:timbertrack_mill_app/screens/truck_tickets/truck_tickets.dart';
@@ -12,14 +13,14 @@ class MainTabbar extends StatelessWidget {
 
   static const appBarTitles = [
     'Home',
-    'Load Tickets',
+    'Contracts',
     'Schedule',
     'People',
   ];
 
   static const _mainTabs = [
     HomeScreen(),
-    LoadTickets(),
+    Contracts(),
   ];
 
   static final _selectedIndex = ValueNotifier(0);
