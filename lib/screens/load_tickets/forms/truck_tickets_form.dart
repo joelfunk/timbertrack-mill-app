@@ -5,8 +5,8 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 
 import 'package:timbertrack_mill_app/providers/contracts_provider.dart';
 import 'package:timbertrack_mill_app/providers/settings_provider.dart';
-import 'package:timbertrack_mill_app/screens/truck_tickets/forms/type1.dart';
-import 'package:timbertrack_mill_app/screens/truck_tickets/forms/type2.dart';
+import 'package:timbertrack_mill_app/screens/load_tickets/forms/type1.dart';
+import 'package:timbertrack_mill_app/screens/load_tickets/forms/type2.dart';
 
 import 'dart:developer' as devtools;
 

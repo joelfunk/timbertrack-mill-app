@@ -24,6 +24,7 @@ class SearchWidget extends StatelessWidget {
         key: const Key('customer-search-text-field'),
         controller: textEditingController,
         decoration: InputDecoration(
+          isDense: true,
           prefixIcon: GestureDetector(child: const Icon(Icons.search, color: Colors.black87)),
           suffixIcon: GestureDetector(
             child: const Icon(Icons.clear, color: Colors.black87),

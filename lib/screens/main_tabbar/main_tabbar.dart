@@ -5,7 +5,6 @@ import 'package:timbertrack_mill_app/constants/constants.dart';
 import 'package:timbertrack_mill_app/screens/contracts/contracts.dart';
 import 'package:timbertrack_mill_app/screens/home/home.dart';
 import 'package:timbertrack_mill_app/providers/auth_provider-port.dart';
-import 'package:timbertrack_mill_app/screens/truck_tickets/truck_tickets.dart';
 import 'package:timbertrack_mill_app/screens/load_tickets/load_tickets.dart';
 
 class MainTabbar extends StatelessWidget {

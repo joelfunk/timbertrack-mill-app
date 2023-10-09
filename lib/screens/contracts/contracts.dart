@@ -45,6 +45,7 @@ class _ContractsState extends State<Contracts> {
 
     return Column(
       children: [
+        const SizedBox(height: 10),
         Expanded(
           child: TableComponent(
             expanded: true,
@@ -59,13 +60,15 @@ class _ContractsState extends State<Contracts> {
             ],
             callback: (data) {
               devtools.log('Data: $data');
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) {
-                  var contract = contracts.firstWhereOrNull((c) => c.id == data?['id']);
-                  return LoadTickets(contract: contract);
-                }),
-              );
+              var contract = contracts.firstWhereOrNull((c) => c.id == data?['id']);
+              if (contract != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) {
+                    return LoadTickets(contract: contract);
+                  }),
+                );
+              }
             },
           ),
         )
