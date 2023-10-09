@@ -59,7 +59,6 @@ class _ContractsState extends State<Contracts> {
               {'name': 'ID', 'field': 'customId', 'width': 30},
             ],
             callback: (data) {
-              devtools.log('Data: $data');
               var contract = contracts.firstWhereOrNull((c) => c.id == data?['id']);
               if (contract != null) {
                 Navigator.push(

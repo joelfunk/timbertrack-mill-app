@@ -7,9 +7,14 @@ import 'package:timbertrack_mill_app/providers/contracts_provider.dart';
 
 class LoadTicketsProvider extends ChangeNotifier {
   final List<Map<String, dynamic>> loadTickets = [];
+  bool loading = false;
 
   void getLoadTickets(String handle, Contract contract) async {
     devtools.log('Get Load Tickets');
+
+    loadTickets.clear();
+    loading = true;
+    notifyListeners();
 
     final response = await FirebaseEnv.firebaseFirestore
         .collection('$handle/procurement/logTickets/')
@@ -25,6 +30,7 @@ class LoadTicketsProvider extends ChangeNotifier {
     }
     loadTickets.sort((a, b) => b['date'].compareTo(a['date']));
 
+    loading = false;
     notifyListeners();
   }
 }

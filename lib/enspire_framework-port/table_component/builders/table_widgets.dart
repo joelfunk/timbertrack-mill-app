@@ -63,14 +63,14 @@ Widget createIconColumn(Size size, int columnWidth, dynamic columnText, bool isE
     case true:
       {
         return Expanded(
-          child: Container(padding: const EdgeInsets.all(10), child: columnText),
+          child: Container(padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 5), child: columnText),
         );
       }
     default:
       {
         return Container(
             width: size.width * table_utilities.convertWidthToPercent(columnWidth),
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
             child: columnText);
       }
   }
@@ -177,7 +177,7 @@ Container createTextColumn({
   if (!highlight) {
     return Container(
         width: width,
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
         child: Text(
           text,
           style: const TextStyle(
@@ -188,7 +188,7 @@ Container createTextColumn({
 
   return Container(
     width: width,
-    padding: const EdgeInsets.all(15),
+    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
     child: ValueListenableBuilder(
       valueListenable: SearchService().highlightWords,
       builder: (context, value, child) {
@@ -216,7 +216,7 @@ Expanded createExpandedTextColumn({
   if (!highlight) {
     return Expanded(
       child: Container(
-          padding: const EdgeInsets.all(15),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
           child: Text(
             text,
             style: const TextStyle(
@@ -228,7 +228,7 @@ Expanded createExpandedTextColumn({
 
   return Expanded(
     child: Container(
-      padding: const EdgeInsets.all(15),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
       child: ValueListenableBuilder(
         valueListenable: SearchService().highlightWords,
         builder: (context, value, child) {

@@ -11,6 +11,8 @@ import 'package:timbertrack_mill_app/enspire_framework-port/table_component/tabl
 
 import 'dart:developer' as devtools;
 
+import 'package:timbertrack_mill_app/screens/load_tickets/log_tags.dart';
+
 class LoadTickets extends StatefulWidget {
   const LoadTickets({required this.contract, super.key});
   final Contract contract;
@@ -32,6 +34,7 @@ class _LoadTicketsState extends State<LoadTickets> {
   @override
   Widget build(BuildContext context) {
     final hits = context.watch<LoadTicketsProvider>().loadTickets;
+    final isLoading = context.read<LoadTicketsProvider>().loading;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Load Tickets')),
@@ -44,31 +47,38 @@ class _LoadTicketsState extends State<LoadTickets> {
               Navigator.push(context, MaterialPageRoute(builder: (_) => const TruckTicketsForm()));
             },
           ),
-          Expanded(
-            child: TableComponent(
-              expanded: true,
-              statusColors: [],
-              showSearch: true,
-              refresh: true,
-              data: hits,
-              columns: const [
-                {'name': 'ID', 'field': 'id', 'width': 25},
-                {'name': 'DATE', 'field': 'date', 'type': 'timestamp', 'width': 35},
-                {'name': 'VOLUME', 'field': 'totalVolume', 'width': 40},
-              ],
-              callback: (data) {
-                devtools.log('Data: $data');
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => TruckTicketsForm(
-                      logTicket: data,
-                    ),
-                  ),
-                );
-              },
+          if (isLoading)
+            const Padding(
+              padding: EdgeInsets.only(top: 60),
+              child: Center(child: CircularProgressIndicator()),
             ),
-          )
+          if (!isLoading)
+            Expanded(
+              child: TableComponent(
+                expanded: true,
+                statusColors: [],
+                showSearch: true,
+                refresh: true,
+                data: hits,
+                columns: const [
+                  {'name': 'ID', 'field': 'id', 'width': 25},
+                  {'name': 'DATE', 'field': 'date', 'type': 'timestamp', 'width': 35},
+                  {'name': 'VOLUME', 'field': 'totalVolume', 'width': 40},
+                ],
+                callback: (data) {
+                  devtools.log('Data: $data');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LogTags(
+                        contract: widget.contract,
+                        logTicket: data!,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
         ],
       ),
     );
