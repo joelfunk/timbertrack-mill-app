@@ -12,14 +12,14 @@ class HandleProvider extends ChangeNotifier {
   String? handle;
   final Map<String, dynamic> companyInfo = {};
 
-  String? fetchHandle() {
-    handle = LocalStorage.getString('handle');
+  Future<String?> fetchHandle() async {
+    handle = await LocalStorage().getString('handle');
     notifyListeners();
     return handle;
   }
 
   Future<String?> setHandle(String newHandle) async {
-    await LocalStorage.setString('handle', newHandle);
+    await LocalStorage().setString('handle', newHandle);
     handle = newHandle;
     notifyListeners();
     return handle;

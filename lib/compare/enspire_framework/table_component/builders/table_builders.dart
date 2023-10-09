@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'package:timbertrack_mill_app/shared/constants.dart' as theme_colors show AppTheme;
-import 'package:timbertrack_mill_app/enspire_framework/table_component/builders/table_widgets.dart'
-    as table_widgets show checkAndReturnFormattedTypes, createAndFormatTextColumn;
-import 'package:timbertrack_mill_app/enspire_framework/table_component/table_component.dart'
-    show Sorting, OrderBy, SearchServiceClass;
-import 'package:timbertrack_mill_app/enspire_framework/utilities/table_utilities.dart' as table_utilities
-    show convertWidthToPercent;
+import 'package:mobiletrack_dispatch_flutter/constants/constants.dart' as theme_colors;
+import 'package:mobiletrack_dispatch_flutter/enspire_framework/table_component/table_component.dart';
+
+import 'package:mobiletrack_dispatch_flutter/enspire_framework/utilities/table_utilities.dart' as table_utilities;
+import 'package:mobiletrack_dispatch_flutter/enspire_framework/table_component/builders/table_widgets.dart'
+    as table_widgets;
 
 /// Creates each Table Header's Column
 Widget createTableHeaderColumn({

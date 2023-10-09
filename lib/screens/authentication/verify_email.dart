@@ -6,14 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:timbertrack_mill_app/shared/constants.dart';
+import 'package:timbertrack_mill_app/constants/constants.dart';
 import 'package:timbertrack_mill_app/config/firebase_env.dart';
 import 'package:timbertrack_mill_app/dialogs/alert_dialog.dart';
-import 'package:timbertrack_mill_app/providers/auth_provider.dart';
+import 'package:timbertrack_mill_app/providers/auth_provider-port.dart';
 import 'package:timbertrack_mill_app/providers/handle_provider.dart';
 import 'package:timbertrack_mill_app/screens/main_tabbar/main_tabbar.dart';
 import 'package:timbertrack_mill_app/screens/authentication/check_authentication.dart';
-
 
 class VerifyEmail extends StatefulWidget {
   const VerifyEmail({
@@ -59,7 +58,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
           final verify = await context.read<AuthProvider>().verifyEmailRole(
                 email: checkUser!.email!,
                 handle: handle!,
-                appName: kAppName,
+                appName: APP_NAME,
                 isRegistration: false,
               );
 

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '/enspire_framework/utilities/table_utilities.dart' as table_utilities;
+import '/enspire_framework-port/utilities/table_utilities.dart' as table_utilities;
 import 'package:timbertrack_mill_app/shared/widgets/search_widget.dart';
-import 'package:timbertrack_mill_app/shared/constants.dart' as theme_colors show AppTheme;
-import 'package:timbertrack_mill_app/enspire_framework/table_component/builders/table_builders.dart'
+import 'package:timbertrack_mill_app/constants/constants.dart' as theme_colors show AppTheme;
+import 'package:timbertrack_mill_app/enspire_framework-port/table_component/builders/table_builders.dart'
     as table_builders;
 
 // Added Assertions to check for correct width on columns

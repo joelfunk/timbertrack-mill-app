@@ -15,13 +15,9 @@ class FirebaseEnv {
   late final FirebaseApp _app;
 
   static FirebaseApp get app => _instance._app;
-
   static String get environmentType => const String.fromEnvironment('ENV');
-
   static FirebaseAuth get firebaseAuth => FirebaseAuth.instanceFor(app: _instance._app);
-
   static FirebaseStorage get firebaseStorage => FirebaseStorage.instanceFor(app: _instance._app);
-
   static FirebaseFirestore get firebaseFirestore => FirebaseFirestore.instanceFor(app: _instance._app);
 
   static Future<void> initializeEnv() async {
@@ -35,6 +31,7 @@ class FirebaseEnv {
         : DefaultFirebaseOptionsProduction.currentPlatform;
 
     final app = await Firebase.initializeApp(
+      name: environmentType,
       options: options,
     );
 

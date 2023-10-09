@@ -1,8 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer' as devtools;
-
 import 'package:flutter/material.dart' show immutable, ChangeNotifier;
-
 import 'package:timbertrack_mill_app/config/firebase_env.dart';
 
 @immutable
@@ -61,16 +59,16 @@ class ContractProvider extends ChangeNotifier {
         devtools.log('Error fetching contracts', error: error);
       });
 
-  void fetchTypes(String handle) =>
-      FirebaseEnv.firebaseFirestore.collection(handle).doc('procurement').get().then((doc) {
-        final data = doc.data()!;
-        final types = data['types'] as List<dynamic>;
+  void fetchTypes(String handle) => null;
+  // FirebaseEnv.firebaseFirestore.collection(handle).doc('procurement').get().then((doc) {
+  //   final data = doc.data()!;
+  //   final types = data['types'] as List<dynamic>;
 
-        for (final type in types) {
-          contentTypes.add(type);
-        }
-      }).onError((error, stackTrace) {
-        devtools.log('Error fetching types', error: error);
-        devtools.log('Stack Trace: ', error: stackTrace);
-      });
+  //   for (final type in types) {
+  //     contentTypes.add(type);
+  //   }
+  // }).onError((error, stackTrace) {
+  //   devtools.log('Error fetching types', error: error);
+  //   devtools.log('Stack Trace: ', error: stackTrace);
+  // });
 }

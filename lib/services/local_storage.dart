@@ -1,32 +1,36 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'dart:developer' as devtools;
-
 class LocalStorage {
   LocalStorage._();
-
   static final LocalStorage _instance = LocalStorage._();
   factory LocalStorage() => _instance;
 
   SharedPreferences? _sharedPreferences;
 
-  static Future<void> initialize() async {
-    _instance._sharedPreferences = await SharedPreferences.getInstance();
+  Future<String?> getString(String key) async {
+    if (_sharedPreferences == null) {
+      _sharedPreferences = await SharedPreferences.getInstance();
+      return _sharedPreferences!.getString(key);
+    } else {
+      return _sharedPreferences!.getString(key);
+    }
   }
 
-  static String? getString(String key) {
-    final value = _instance._sharedPreferences!.getString(key);
-
-    if (value == null) devtools.log('Error Local Storage: ', error: '[key] not found');
-
-    return _instance._sharedPreferences!.getString(key);
+  Future<void> setString(String key, String value) async {
+    if (_sharedPreferences == null) {
+      _sharedPreferences = await SharedPreferences.getInstance();
+      _sharedPreferences!.setString(key, value);
+    } else {
+      _sharedPreferences!.setString(key, value);
+    }
   }
 
-  static Future<void> setString(String key, String value) async {
-    await _instance._sharedPreferences!.setString(key, value);
-  }
-
-  static Future<void> remove(String key) async {
-    await _instance._sharedPreferences!.remove(key);
+  Future<bool> remove(String key) async {
+    if (_sharedPreferences == null) {
+      _sharedPreferences = await SharedPreferences.getInstance();
+      return (await _sharedPreferences!.remove(key));
+    } else {
+      return (await _sharedPreferences!.remove(key));
+    }
   }
 }

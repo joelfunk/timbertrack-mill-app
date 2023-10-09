@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:timbertrack_mill_app/shared/constants.dart' as theme_colors show AppTheme;
+import 'package:timbertrack_mill_app/constants/constants.dart' as theme_colors show AppTheme;
 
 class CircleHeaderComponent extends StatelessWidget {
   const CircleHeaderComponent({

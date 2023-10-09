@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'package:timbertrack_mill_app/providers/handle_provider.dart';
 import 'package:timbertrack_mill_app/providers/contracts_provider.dart';
+import 'package:timbertrack_mill_app/providers/load_tickets_provider.dart';
 import 'package:timbertrack_mill_app/providers/settings_provider.dart';
 import 'package:timbertrack_mill_app/providers/truck_tickets_provider.dart';
 import 'package:timbertrack_mill_app/screens/truck_tickets/forms/truck_tickets_form.dart';
@@ -11,14 +12,14 @@ import 'package:timbertrack_mill_app/enspire_framework-port/table_component/tabl
 
 import 'dart:developer' as devtools;
 
-class TruckTickets extends StatefulWidget {
-  const TruckTickets({super.key});
+class LoadTickets extends StatefulWidget {
+  const LoadTickets({super.key});
 
   @override
-  State<TruckTickets> createState() => _TruckTicketsState();
+  State<LoadTickets> createState() => _LoadTicketsState();
 }
 
-class _TruckTicketsState extends State<TruckTickets> {
+class _LoadTicketsState extends State<LoadTickets> {
   @override
   void initState() {
     super.initState();
@@ -27,32 +28,33 @@ class _TruckTicketsState extends State<TruckTickets> {
     context.read<SettingsProvider>().fetchSettings(handle);
     context.read<ContractProvider>().fetchContracts(handle);
     context.read<ContractProvider>().fetchTypes(handle);
-    context.read<TruckTicketsProvider>().getTruckTickets(handle);
+    context.read<LoadTicketsProvider>().getLoadTickets(handle);
   }
 
   @override
   Widget build(BuildContext context) {
-    final hits = context.watch<TruckTicketsProvider>().truckTickets;
+    final hits = context.watch<LoadTicketsProvider>().loadTickets;
 
     return Column(
       children: [
         ITabHeader(
-          title: 'Truck Tickets',
-          buttonTitle: '+ New Truck',
+          title: 'Load Tickets',
+          buttonTitle: '+ New Ticket',
           buttonCallback: () {
             Navigator.push(context, MaterialPageRoute(builder: (_) => const TruckTicketsForm()));
           },
         ),
         Expanded(
           child: TableComponent(
+            expanded: true,
             statusColors: [],
             showSearch: true,
             refresh: true,
             data: hits,
             columns: const [
               {'name': 'ID', 'field': 'id', 'width': 30},
-              {'name': 'CONTRACT ID', 'field': 'contractId', 'width': 30},
-              {'name': 'CONTENTS', 'field': 'contents', 'width': 40},
+              {'name': 'DATE', 'field': 'date', 'type': 'timestamp', 'width': 30},
+              {'name': 'VOLUME', 'field': 'totalVolume', 'width': 40},
             ],
             callback: (data) {
               devtools.log('Data: $data');

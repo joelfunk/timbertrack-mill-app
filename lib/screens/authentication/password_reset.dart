@@ -4,10 +4,10 @@ import 'package:validators/validators.dart';
 import 'package:simple_forms/widgets/form_input.dart';
 import 'package:simple_forms/models/app_form_state.dart';
 
-import 'package:timbertrack_mill_app/shared/constants.dart';
+import 'package:timbertrack_mill_app/constants/constants.dart';
 import 'package:timbertrack_mill_app/extensions/is_tablet.dart';
 import 'package:timbertrack_mill_app/extensions/is_portrait.dart';
-import 'package:timbertrack_mill_app/providers/auth_provider.dart';
+import 'package:timbertrack_mill_app/providers/auth_provider-port.dart';
 import 'package:timbertrack_mill_app/shared/widgets/loading_overlay.dart';
 
 class PasswordFormState extends AppFormState<String, String> {

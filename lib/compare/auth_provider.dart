@@ -7,15 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:timbertrack_mill_app/shared/constants.dart';
-import 'package:timbertrack_mill_app/config/firebase_env.dart';
-import 'package:timbertrack_mill_app/dialogs/alert_dialog.dart';
-import 'package:timbertrack_mill_app/services/local_storage.dart';
-import 'package:timbertrack_mill_app/providers/user_provider.dart';
-import 'package:timbertrack_mill_app/providers/handle_provider.dart';
-import 'package:timbertrack_mill_app/screens/main_tabbar/main_tabbar.dart';
-import 'package:timbertrack_mill_app/screens/authentication/verify_email.dart';
-import 'package:timbertrack_mill_app/screens/authentication/check_authentication.dart';
+import 'package:mobiletrack_dispatch_flutter/config/firebase_env.dart';
+import 'package:mobiletrack_dispatch_flutter/constants/constants.dart';
+import 'package:mobiletrack_dispatch_flutter/dialogs/alert_dialog.dart';
+import 'package:mobiletrack_dispatch_flutter/services/local_storage.dart';
+import 'package:mobiletrack_dispatch_flutter/providers/user_provider.dart';
+import 'package:mobiletrack_dispatch_flutter/providers/handle_provider.dart';
+import 'package:mobiletrack_dispatch_flutter/screens/main_tabbar/main_tabbar.dart';
+import 'package:mobiletrack_dispatch_flutter/screens/authentication/verify_email.dart';
+import 'package:mobiletrack_dispatch_flutter/screens/authentication/check_authentication.dart';
 
 enum AuthStatus { initial, signedIn, signedOut }
 
@@ -52,7 +52,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<AuthStatus?> authenticateUser(BuildContext context) async {
     final user = FirebaseEnv.firebaseAuth.currentUser;
-    final handle = context.read<HandleProvider>().fetchHandle();
+    final handle = await context.read<HandleProvider>().fetchHandle();
 
     // Will Forward to Email Verification Screen if somehow the user's email was never verified
     if (user != null && !user.emailVerified) {
@@ -106,7 +106,7 @@ class AuthProvider extends ChangeNotifier {
       final verify = await verifyEmailRole(
         email: email,
         handle: handle,
-        appName: kAppName,
+        appName: APP_NAME,
         isRegistration: false,
       );
 
@@ -125,7 +125,7 @@ class AuthProvider extends ChangeNotifier {
             await context.read<UserProvider>().subUser(email, handle);
 
             // Set User email to local storage
-            await LocalStorage.setString('email', email);
+            await LocalStorage().setString('email', email);
 
             // Move to MainTabbar Screen
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainTabbar()));
@@ -161,7 +161,7 @@ class AuthProvider extends ChangeNotifier {
     required BuildContext context,
   }) async {
     try {
-      final handle = context.read<HandleProvider>().fetchHandle();
+      final handle = await context.read<HandleProvider>().fetchHandle();
 
       if (handle == null) {
         throw FirebaseAuthException(
@@ -177,7 +177,7 @@ class AuthProvider extends ChangeNotifier {
       final verify = await verifyEmailRole(
         email: email,
         handle: handle,
-        appName: kAppName,
+        appName: APP_NAME,
         firstName: firstName,
         lastName: lastName,
         isRegistration: true,
@@ -247,7 +247,7 @@ class AuthProvider extends ChangeNotifier {
         if (isRegistration) {
           final defaultScheduleData = await FirebaseEnv.firebaseFirestore
               .collection('_mobiletrack/settings/defaultSettings')
-              .doc(kAppName)
+              .doc(APP_NAME)
               .get();
           final response = defaultScheduleData.data();
 

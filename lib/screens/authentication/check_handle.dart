@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:simple_forms/widgets/form_input.dart';
 import 'package:simple_forms/models/app_form_state.dart';
 
-import 'package:timbertrack_mill_app/shared/constants.dart';
+import 'package:timbertrack_mill_app/constants/constants.dart';
 import 'package:timbertrack_mill_app/extensions/is_tablet.dart';
 import 'package:timbertrack_mill_app/extensions/is_portrait.dart';
 import 'package:timbertrack_mill_app/services/local_storage.dart';
@@ -36,7 +36,7 @@ class _CheckHandleState extends State<CheckHandle> {
     super.initState();
     // Check's local storage for saved handle
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final handle = LocalStorage.getString('handle') ?? '';
+      final handle = await LocalStorage().getString('handle') ?? '';
       _formState['handle'] = handle;
     });
   }

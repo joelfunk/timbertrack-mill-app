@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:timbertrack_mill_app/shared/constants.dart';
+import 'package:timbertrack_mill_app/constants/constants.dart';
 
 class SearchWidget extends StatelessWidget {
   const SearchWidget({

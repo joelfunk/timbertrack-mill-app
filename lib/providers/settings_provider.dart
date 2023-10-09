@@ -17,16 +17,16 @@ class SettingsProvider extends ChangeNotifier {
       };
 
   void fetchSettings(String handle) async {
-    await FirebaseEnv.firebaseFirestore
-        .collection('$handle/settings/mills')
-        .where('deleted', isEqualTo: false)
-        .get()
-        .then((snapshot) {
-      for (final doc in snapshot.docs) {
-        final data = doc.data();
-        mills.add({'id': doc.id, ...data});
-      }
-    });
+    // await FirebaseEnv.firebaseFirestore
+    //     .collection('$handle/settings/mills')
+    //     .where('deleted', isEqualTo: false)
+    //     .get()
+    //     .then((snapshot) {
+    //   for (final doc in snapshot.docs) {
+    //     final data = doc.data();
+    //     mills.add({'id': doc.id, ...data});
+    //   }
+    // });
 
     await FirebaseEnv.firebaseFirestore
         .collection('$handle/settings/landings')
@@ -40,8 +40,9 @@ class SettingsProvider extends ChangeNotifier {
     });
 
     await FirebaseEnv.firebaseFirestore
-        .collection('$handle/settings/outsideMills')
+        .collection('$handle/profiles/profiles')
         .where('deleted', isEqualTo: false)
+        .where('type', arrayContains: 'outside_mill')
         .get()
         .then((snapshot) {
       for (final doc in snapshot.docs) {

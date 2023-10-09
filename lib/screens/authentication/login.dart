@@ -5,11 +5,11 @@ import 'package:simple_forms/widgets/form_input.dart';
 import 'package:simple_forms/models/app_form_state.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import 'package:timbertrack_mill_app/shared/constants.dart';
+import 'package:timbertrack_mill_app/constants/constants.dart';
 import 'package:timbertrack_mill_app/extensions/is_tablet.dart';
 import 'package:timbertrack_mill_app/services/local_storage.dart';
 import 'package:timbertrack_mill_app/extensions/is_portrait.dart';
-import 'package:timbertrack_mill_app/providers/auth_provider.dart';
+import 'package:timbertrack_mill_app/providers/auth_provider-port.dart';
 import 'package:timbertrack_mill_app/providers/handle_provider.dart';
 import 'package:timbertrack_mill_app/shared/widgets/loading_overlay.dart';
 import 'package:timbertrack_mill_app/screens/authentication/registration.dart';
@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      _formState['email'] = LocalStorage.getString('email') ?? '';
+      _formState['email'] = await LocalStorage().getString('email') ?? '';
     });
   }
 
