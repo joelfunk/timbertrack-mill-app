@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:timbertrack_mill_app/enspire_framework-port/itab_header/itab_header.dart';
 
 import 'package:timbertrack_mill_app/providers/handle_provider.dart';
 import 'package:timbertrack_mill_app/providers/contracts_provider.dart';
@@ -39,13 +40,18 @@ class _ContractsState extends State<Contracts> {
     List<Map<String, dynamic>> data = [];
     for (var contract in contractsTable) {
       var user = users.firstWhereOrNull((u) => u.id == contract['foresterId']);
-      contract['customId'] = (user?.firstName[0] ?? '') + (user?.lastName[0] ?? '') + '-' + contract['id'];
+      // ignore: prefer_interpolation_to_compose_strings
+      contract['customId'] = '${user?.firstName[0] ?? ''}${user?.lastName[0] ?? ''}-' + contract['id'];
       data.add(contract);
     }
 
     return Column(
       children: [
-        const SizedBox(height: 10),
+        const ITabHeader(
+          title: 'Contracts',
+          buttonTitle: null,
+          buttonCallback: null,
+        ),
         Expanded(
           child: TableComponent(
             expanded: true,
@@ -64,7 +70,7 @@ class _ContractsState extends State<Contracts> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) {
-                    return LoadTickets(contract: contract);
+                    return LoadTickets(contract: contract, customId: data?['customId']);
                   }),
                 );
               }

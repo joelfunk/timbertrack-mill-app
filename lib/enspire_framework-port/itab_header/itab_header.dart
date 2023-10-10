@@ -36,7 +36,8 @@ class ITabHeader extends StatelessWidget {
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 14,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               if (buttonTitle != null)

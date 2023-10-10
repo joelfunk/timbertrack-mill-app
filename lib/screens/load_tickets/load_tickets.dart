@@ -8,14 +8,14 @@ import 'package:timbertrack_mill_app/providers/settings_provider.dart';
 import 'package:timbertrack_mill_app/screens/load_tickets/forms/truck_tickets_form.dart';
 import 'package:timbertrack_mill_app/enspire_framework-port/itab_header/itab_header.dart';
 import 'package:timbertrack_mill_app/enspire_framework-port/table_component/table_component.dart';
+import 'package:timbertrack_mill_app/screens/load_tickets/log_tags.dart';
 
 import 'dart:developer' as devtools;
 
-import 'package:timbertrack_mill_app/screens/load_tickets/log_tags.dart';
-
 class LoadTickets extends StatefulWidget {
-  const LoadTickets({required this.contract, super.key});
+  const LoadTickets({required this.contract, required this.customId, super.key});
   final Contract contract;
+  final String customId;
 
   @override
   State<LoadTickets> createState() => _LoadTicketsState();
@@ -37,12 +37,12 @@ class _LoadTicketsState extends State<LoadTickets> {
     final isLoading = context.read<LoadTicketsProvider>().loading;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Load Tickets')),
+      appBar: AppBar(title: Text('${widget.customId} ${widget.contract.contractName}')),
       body: Column(
         children: [
           ITabHeader(
-            title: 'Load Tickets',
-            buttonTitle: '+ New Ticket',
+            title: 'Load Tickets: ${widget.customId}',
+            buttonTitle: '+ Load Ticket',
             buttonCallback: () {
               Navigator.push(context, MaterialPageRoute(builder: (_) => const TruckTicketsForm()));
             },
@@ -72,6 +72,7 @@ class _LoadTicketsState extends State<LoadTickets> {
                     MaterialPageRoute(
                       builder: (_) => LogTags(
                         contract: widget.contract,
+                        customId: widget.customId,
                         logTicket: data!,
                       ),
                     ),

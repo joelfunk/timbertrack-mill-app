@@ -12,8 +12,9 @@ import 'package:timbertrack_mill_app/enspire_framework-port/table_component/tabl
 import 'dart:developer' as devtools;
 
 class LogTags extends StatefulWidget {
-  const LogTags({required this.contract, required this.logTicket, super.key});
+  const LogTags({required this.contract, required this.logTicket, required this.customId, super.key});
   final Contract contract;
+  final String customId;
   final Map<String, dynamic> logTicket;
 
   @override
@@ -38,12 +39,12 @@ class _LogTagsState extends State<LogTags> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Log Tags')),
+      appBar: AppBar(title: Text('#${widget.logTicket['id']} Log Tags')),
       body: Column(
         children: [
           ITabHeader(
-            title: 'Log Tags',
-            buttonTitle: '+ New Tag',
+            title: 'Volume: ${widget.logTicket['totalVolume']}',
+            buttonTitle: '+ Log Tag',
             buttonCallback: () {
               Navigator.push(context, MaterialPageRoute(builder: (_) => const TruckTicketsForm()));
             },
@@ -62,8 +63,6 @@ class _LogTagsState extends State<LogTags> {
                 {'name': 'Diam', 'field': 'diameter', 'width': 20},
                 {'name': 'Len', 'field': 'length', 'width': 15},
                 {'name': 'Vol', 'field': 'volume', 'width': 15},
-                // {'name': 'DATE', 'field': 'date', 'type': 'timestamp', 'width': 35},
-                // {'name': 'VOLUME', 'field': 'totalVolume', 'width': 40},
               ],
               callback: (data) {
                 devtools.log('Data: $data');

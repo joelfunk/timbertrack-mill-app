@@ -5,16 +5,15 @@ import 'package:timbertrack_mill_app/constants/constants.dart';
 import 'package:timbertrack_mill_app/screens/contracts/contracts.dart';
 import 'package:timbertrack_mill_app/screens/home/home.dart';
 import 'package:timbertrack_mill_app/providers/auth_provider-port.dart';
-import 'package:timbertrack_mill_app/screens/load_tickets/load_tickets.dart';
 
 class MainTabbar extends StatelessWidget {
   const MainTabbar({super.key});
 
   static const appBarTitles = [
     'Home',
-    'Contracts',
-    'Schedule',
-    'People',
+    'Procurement',
+    'Consumed',
+    'Kilns',
   ];
 
   static const _mainTabs = [
@@ -91,7 +90,7 @@ class MainTabbar extends StatelessWidget {
                     child: SizedBox(
                       height: 26,
                       child: Icon(
-                        Icons.forest,
+                        Icons.local_shipping,
                         size: 30,
                         color:
                             selectedIndex == 1 ? AppTheme.bottomAppBarIconActiveColor : AppTheme.bottomAppBarIconColor,
@@ -103,7 +102,7 @@ class MainTabbar extends StatelessWidget {
                     child: SizedBox(
                       height: 26,
                       child: Icon(
-                        Icons.event_note,
+                        Icons.forest,
                         size: 30,
                         color:
                             selectedIndex == 2 ? AppTheme.bottomAppBarIconActiveColor : AppTheme.bottomAppBarIconColor,
@@ -115,7 +114,7 @@ class MainTabbar extends StatelessWidget {
                     child: SizedBox(
                       height: 26,
                       child: Icon(
-                        Icons.people_alt,
+                        Icons.local_fire_department,
                         size: 30,
                         color:
                             selectedIndex == 3 ? AppTheme.bottomAppBarIconActiveColor : AppTheme.bottomAppBarIconColor,
